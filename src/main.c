@@ -37,7 +37,8 @@ int main(void) {
 
 	while (1){
 		//Zobrazeni hesla, jeho sily, parametru se kterymi bylo vygenerovano a menu
-		show_password_and_its_parameters(password, password_length, use_uppercase, use_lowercase, use_digits, use_symbols);
+		PasswordStrength strength = evaluate_password_strength(password);
+		show_password_and_its_parameters(password, password_length, use_uppercase, use_lowercase, use_digits, use_symbols, strength);
 		show_menu();
 
 		//Nacteni zvolene polozky menu
@@ -45,14 +46,36 @@ int main(void) {
 
 		switch (choice){
 		case 1:
-			//Generace hesla
-			free(password);
-			password = generate_password(password_length, use_uppercase, use_lowercase, use_digits, use_symbols);
+			// Generace hesla
+			if (password != NULL) {
+				free(password);
+				password = NULL;
+			}
+
+			PasswordStrength strength;
+			int max_strength = calculate_max_possible_strength(password_length, use_uppercase, use_lowercase, use_digits, use_symbols);
+
+			do {
+				if (password != NULL) {
+					free(password);
+					password = NULL;
+				}
+				password = generate_password(password_length, use_uppercase, use_lowercase, use_digits, use_symbols);
+				strength = evaluate_password_strength(password);
+			} while (strength.total < max_strength);  
+
 			break;
 		case 2:
 			//Nacteni delky hesla
-			puts("Enter password length: ");
-			password_length = read_int();
+			do {
+				puts("Enter password length (minimum 8): ");
+				password_length = read_int();
+
+				if (password_length < 8) {
+					puts("Password too short! Minimum is 8 characters.");
+				}
+			} while (password_length < 8);
+
 
 			//Nacteni parametru pro generaci hesla
 			use_uppercase = get_answer("Do you want to include uppercase?");
@@ -71,6 +94,21 @@ int main(void) {
 	free(password);
 	return EXIT_SUCCESS;
 }
+
+// Výpočet maximální možné síly hesla
+int calculate_max_possible_strength(int length, bool upper, bool lower, bool digits, bool symbols) {
+	int max_strength = 0;
+
+	if (length >= 12) max_strength++;               
+	if (upper || lower || digits || symbols) max_strength++; 
+	if (upper && lower && digits && symbols) max_strength++; 
+	if (length >= 4) max_strength++;                
+	max_strength++;                                 
+
+	return max_strength;
+}
+
+
 
 //Funkce pro bezpecne cteni celych cisel
 int read_int() {
@@ -117,18 +155,26 @@ void show_menu(){
 }
 
 void show_password_and_its_parameters(char* password, int password_length, bool use_uppercase,
-									  bool use_lowercase, bool use_digits, bool use_symbols){
-	#ifdef _WIN32
-		system("cls");
-	#else
-		system("clear");
-	#endif
+	bool use_lowercase, bool use_digits, bool use_symbols,
+	PasswordStrength strength) {
+#ifdef _WIN32
+	system("cls");
+#else
+	system("clear");
+#endif
 
-	printf("Password: %s\nStrength: %d/5\n", password, evaluate_password_strength(password));
-	printf("Parameters: Length: %d | Uppercase: %s | Lowercase: %s | Digits: %s | Symbols: %s\n",
-	          password_length,
-	          use_uppercase ? "ON" : "OFF",
-	          use_lowercase ? "ON" : "OFF",
-	          use_digits ? "ON" : "OFF",
-	          use_symbols ? "ON" : "OFF");
+	printf(" Password: %s\n", password);
+	printf(" Strength: %d/5\n", strength.total);
+	printf(" Length OK:           %s\n", strength.length_strength ? "Yes" : "No");
+	printf(" Not compromised:     %s\n", strength.compromise_strength ? "Yes" : "No");
+	printf(" All char types used: %s\n", strength.charset_strength ? "Yes" : "No");
+	printf(" 70%% unique chars:     %s\n", strength.uniqueness_strength ? "Yes" : "No");
+	printf(" No repeated chars:   %s\n", strength.repetition_strength ? "Yes" : "No");
+
+	printf("\n Parameters: Length: %d | Uppercase: %s | Lowercase: %s | Digits: %s | Symbols: %s\n",
+		password_length,
+		use_uppercase ? "ON" : "OFF",
+		use_lowercase ? "ON" : "OFF",
+		use_digits ? "ON" : "OFF",
+		use_symbols ? "ON" : "OFF");
 }

@@ -1,0 +1,7 @@
+﻿  password_generator.c
+C:\Users\Jirka\source\repos\Projekt_VBA\src\password_generator.c(52,21): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Jirka\source\repos\Projekt_VBA\src\password_generator.c(53,21): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Jirka\source\repos\Projekt_VBA\src\password_generator.c(54,18): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Jirka\source\repos\Projekt_VBA\src\password_generator.c(55,19): warning C4996: 'strncat': This function or variable may be unsafe. Consider using strncat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Jirka\source\repos\Projekt_VBA\src\password_generator.c(57,20): warning C4267: inicializování: Převod z: size_t na: int, může dojít ke ztrátě dat.
+  Projekt_VBA.vcxproj -> C:\Users\Jirka\source\repos\Projekt_VBA\x64\Debug\Projekt_VBA.exe
