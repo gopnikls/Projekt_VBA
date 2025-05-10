@@ -1,25 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "strength_check.h"
+#include <stdbool.h>
+#include <ctype.h>
 #include "compromise_check.h"
 
-PasswordStrength evaluate_password_strength(char* password) {
-    PasswordStrength strength = { 0 };
-
+// Sila aktualne vytvoreneho hesla
+int evaluate_password_strength(char* password) {
+    int strength = 0;
     int length = strlen(password);
 
-    // 1. Délka hesla
+    // 1. Delka hesla
     if (length >= 12) {
-        strength.length_strength = 1;
+        strength++;
     }
 
-    // 2. Není kompromitované
+    // 2. Neni kompromitovane
     if (!is_password_compromised(password)) {
-        strength.compromise_strength = 1;
+        strength++;
     }
 
-    // 3. Obsahuje všechny typy znakù
+    // 3. Obsahuje vsechny typy znaku
     bool has_upper = false, has_lower = false, has_digit = false, has_symbol = false;
     for (int i = 0; i < length; ++i) {
         if (isupper(password[i])) has_upper = true;
@@ -28,10 +29,10 @@ PasswordStrength evaluate_password_strength(char* password) {
         else has_symbol = true;
     }
     if (has_upper && has_lower && has_digit && has_symbol) {
-        strength.charset_strength = 1;
+        strength++;
     }
 
-    // 4. Unikátní znaky (alespoò 70 % znakù musí být unikátních)
+    // 4. 70% unikatnich znaku
     int unique_count = 0;
     bool seen[256] = { false };
     for (int i = 0; i < length; ++i) {
@@ -42,10 +43,10 @@ PasswordStrength evaluate_password_strength(char* password) {
         }
     }
     if (length > 0 && ((float)unique_count / length) >= 0.7f) {
-        strength.uniqueness_strength = 1;
+        strength++;
     }
 
-    // 5. Maximálnì 2 stejné znaky za sebou
+    // 5. maximalne 2 stejne znaky za sebou
     bool has_repetition = false;
     for (int i = 2; i < length; ++i) {
         if (password[i] == password[i - 1] && password[i] == password[i - 2]) {
@@ -54,16 +55,8 @@ PasswordStrength evaluate_password_strength(char* password) {
         }
     }
     if (!has_repetition) {
-        strength.repetition_strength = 1;
+        strength++;
     }
-
-    // Výpoèet celkové síly
-    strength.total =
-        strength.length_strength +
-        strength.compromise_strength +
-        strength.charset_strength +
-        strength.uniqueness_strength +
-        strength.repetition_strength;
 
     return strength;
 }

@@ -3,9 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include "password_generator.h"
-#include "compromise_check.h"
-#include "strength_check.h"
 
 // Konstanty pro znaky
 const char* UPPERCASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -13,59 +10,39 @@ const char* LOWERCASE_CHARS = "abcdefghijklmnopqrstuvwxyz";
 const char* DIGIT_CHARS = "0123456789";
 const char* SPECIAL_CHARS = "`~!@#$%^&*()-_=+[]{}\\|;:'\",.<>/?";
 
-// Prototypy funkcí
+// Funkce generovani hesla
 char* generate_password(int password_length, bool use_uppercase, bool use_lowercase,
-	bool use_digits, bool use_symbols);
-PasswordStrength evaluate_password_strength(char* password);
+    bool use_digits, bool use_symbols) {
 
-// Funkce pro generování silného hesla podle kritérií
-char* generate_strong_password(int password_length, bool use_uppercase, bool use_lowercase,
-	bool use_digits, bool use_symbols) {
-	char* password;
-	PasswordStrength strength;
+    if (password_length <= 0) {
+        return NULL;
+    }
 
-	do {
-		// Generuj heslo
-		password = generate_password(password_length, use_uppercase, use_lowercase, use_digits, use_symbols);
-		// Zhodno sílu hesla
-		strength = evaluate_password_strength(password);
+    // Alokace pameti
+    char* password = malloc(password_length + 1);
+    if (password == NULL) {
+        return NULL;
+    }
 
-		// Pokud heslo nevyhovuje podmínkám, generuj nové heslo
-	} while (!(strength.length_strength && strength.compromise_strength && strength.charset_strength &&
-		strength.uniqueness_strength && strength.repetition_strength));
+    // Sestaveni poolu znaku
+    char pool[256] = "";
+    if (use_uppercase) strncat(pool, UPPERCASE_CHARS, sizeof(pool) - strlen(pool) - 1);
+    if (use_lowercase) strncat(pool, LOWERCASE_CHARS, sizeof(pool) - strlen(pool) - 1);
+    if (use_digits) strncat(pool, DIGIT_CHARS, sizeof(pool) - strlen(pool) - 1);
+    if (use_symbols) strncat(pool, SPECIAL_CHARS, sizeof(pool) - strlen(pool) - 1);
 
-	return password;
-}
+    int pool_length = strlen(pool);
+    if (pool_length == 0) {
+        free(password);
+        return NULL;
+    }
 
-// Funkce pro generování hesla
-char* generate_password(int password_length, bool use_uppercase, bool use_lowercase,
-	bool use_digits, bool use_symbols) {
-	if (password_length <= 0)
-		return "Please, enter valid length";
+    // Generovani hesla z poolu
+    for (int i = 0; i < password_length; ++i) {
+        int idx = rand() % pool_length;
+        password[i] = pool[idx];
+    }
+    password[password_length] = '\0';
 
-	char* password = malloc(password_length + 1);
-	if (password == NULL)
-		return "Memory allocation error";
-
-	// Sestavení poolu znakù
-	char pool[256] = "";
-	if (use_uppercase) strncat(pool, UPPERCASE_CHARS, sizeof(pool) - strlen(pool) - 1);
-	if (use_lowercase) strncat(pool, LOWERCASE_CHARS, sizeof(pool) - strlen(pool) - 1);
-	if (use_digits) strncat(pool, DIGIT_CHARS, sizeof(pool) - strlen(pool) - 1);
-	if (use_symbols) strncat(pool, SPECIAL_CHARS, sizeof(pool) - strlen(pool) - 1);
-
-	int pool_length = strlen(pool);
-	if (pool_length == 0) {
-		free(password);
-		return "Please, enter valid parameters (at least one must be ON).";
-	}
-
-	// Generování hesla
-	for (int i = 0; i < password_length; ++i) {
-		int idx = rand() % pool_length;
-		password[i] = pool[idx];
-	}
-	password[password_length] = '\0';
-
-	return password;
+    return password;
 }

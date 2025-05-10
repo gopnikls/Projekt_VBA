@@ -3,15 +3,6 @@
 
 #include <stdbool.h>
 
-typedef struct {
-    int total;
-    int length_strength;
-    int compromise_strength;
-    int charset_strength;
-    int uniqueness_strength;
-    int repetition_strength;
-} PasswordStrength;
-
-PasswordStrength evaluate_password_strength(char* password);
+int evaluate_password_strength(char* password);
 
 #endif
