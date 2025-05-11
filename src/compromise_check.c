@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "compromise_check.h"
+#include "../include/compromise_check.h"
 
 bool is_password_compromised(char* password) {
     FILE* file = fopen("data/100k-most-used-passwords-NCSC.txt", "r");

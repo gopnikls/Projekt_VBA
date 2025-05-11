@@ -3,7 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include "compromise_check.h"
+#include "../include/strength_check.h"
+#include "../include/compromise_check.h"
 
 // Sila aktualne vytvoreneho hesla
 int evaluate_password_strength(char* password) {

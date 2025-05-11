@@ -14,16 +14,16 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include "password_generator.h"
-#include "compromise_check.h"
-#include "strength_check.h"
+#include "../include/compromise_check.h"
+#include "../include/password_generator.h"
+#include "../include/strength_check.h"
 
 //Prototypy funkci
 bool get_answer(char* question);
 int read_int();
 void show_menu();
 void show_password_and_its_parameters(char* password, int password_length, bool use_uppercase,
-									  bool use_lowercase, bool use_digits, bool use_symbols);
+									  bool use_lowercase, bool use_digits, bool use_symbols, int strenght);
 
 int main(void) {
 	srand(time(NULL));
