@@ -23,8 +23,9 @@ bool get_answer(char* question);
 int read_int();
 void show_menu();
 void show_password_and_its_parameters(char* password, int password_length, bool use_uppercase,
-									  bool use_lowercase, bool use_digits, bool use_symbols);
-
+									  bool use_lowercase, bool use_digits, bool use_symbols, int strength);
+int calculate_password_strength(int password_length, bool use_uppercase, bool use_lowercase,
+								bool use_digits, bool use_symbols);
 int main(void) {
 	srand(time(NULL));
 
@@ -34,10 +35,10 @@ int main(void) {
 	bool use_digits = true;
 	bool use_symbols = true;
 	char* password = strdup("");
+	int strength = 0;
 
 	while (1){
 		//Zobrazeni hesla, jeho sily, parametru se kterymi bylo vygenerovano a menu
-		int strength = evaluate_password_strength(password);
 		show_password_and_its_parameters(password, password_length, use_uppercase, use_lowercase, use_digits, use_symbols, strength);
 		show_menu();
 
@@ -72,7 +73,7 @@ int main(void) {
 				password_length = read_int();
 
 				if (password_length < 8) {
-					puts("Password too short! Minimum is 8 characters.");
+					puts("Password is too short! Minimum is 8 characters.");
 				}
 			} while (password_length < 8);
 
@@ -157,8 +158,7 @@ void show_menu(){
 }
 
 void show_password_and_its_parameters(char* password, int password_length, bool use_uppercase,
-	bool use_lowercase, bool use_digits, bool use_symbols,
-	int strength) {
+	bool use_lowercase, bool use_digits, bool use_symbols, int strength) {
 #ifdef _WIN32
 	system("cls");
 #else

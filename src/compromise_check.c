@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "compromise_check.h"
 
 bool is_password_compromised(char* password) {
