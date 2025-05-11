@@ -24,14 +24,16 @@ int evaluate_password_strength(char* password) {
     // 3. Obsahuje vsechny typy znaku
     bool has_upper = false, has_lower = false, has_digit = false, has_symbol = false;
     for (int i = 0; i < length; ++i) {
-        if (isupper(password[i])) has_upper = true;
-        else if (islower(password[i])) has_lower = true;
-        else if (isdigit(password[i])) has_digit = true;
+        unsigned char c = (unsigned char)password[i];
+        if (isupper(c)) has_upper = true;
+        else if (islower(c)) has_lower = true;
+        else if (isdigit(c)) has_digit = true;
         else has_symbol = true;
     }
     if (has_upper && has_lower && has_digit && has_symbol) {
         strength++;
     }
+
 
     // 4. 70% unikatnich znaku
     int unique_count = 0;
